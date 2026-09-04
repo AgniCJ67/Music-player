@@ -113,7 +113,7 @@
             </main>
         </div>
 
-        <!-- Bottom Playbar -->
+                <!-- Bottom Playbar -->
         <footer class="playbar">
             <!-- Now Playing (Left) -->
             <div class="now-playing">
@@ -128,11 +128,10 @@
             <!-- Player Controls (Center) -->
             <div class="player-controls">
                 <div class="control-buttons">
-                    
-                    <!-- NEW: Speed Slider Control -->
+                    <!-- Speed Slider Control -->
                     <div class="speed-slider-container">
                         <span id="speed-label" class="time">1.0x</span>
-                        <input type="range" id="speed-slider" min="0.25" max="2.5" step="0.25" value="1" title="Adjust Speed">
+                        <input type="range" id="speed-slider" class="custom-slider" min="0.25" max="2.5" step="0.25" value="1" title="Adjust Speed">
                     </div>
 
                     <button id="prev-btn" class="icon-btn"><i class="ph-fill ph-skip-back"></i></button>
@@ -156,16 +155,15 @@
             <div class="extra-controls">
                 <button class="icon-btn"><i class="ph ph-microphone-stage"></i></button>
                 <button class="icon-btn"><i class="ph ph-devices"></i></button>
+                <!-- NEW: Draggable Volume Slider -->
                 <div class="volume-control">
                     <button class="icon-btn" id="mute-btn"><i class="ph ph-speaker-high"></i></button>
-                    <div class="progress-bar-bg" id="volume-container">
-                        <div class="progress-bar-fill" id="volume-progress" style="width: 100%;">
-                            <div class="progress-bar-thumb"></div>
-                        </div>
-                    </div>
+                    <input type="range" id="volume-slider" class="custom-slider" min="0" max="1" step="0.01" value="1" title="Volume">
                 </div>
             </div>
         </footer>
+
+        
 
         <audio id="audio-player"></audio>
     </div>
