@@ -6,8 +6,9 @@
     <title>Miniify - Professional Edition</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Using CSS to load Phosphor icons so Brave doesn't block them -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
 </head>
 <body>
     <div class="app-wrapper">
@@ -21,9 +22,10 @@
                 </div>
                 
                 <ul class="nav-links">
-                    <li class="active"><i class="ph ph-house"></i> Home</li>
-                    <li><i class="ph ph-magnifying-glass"></i> Search</li>
-                    <li><i class="ph ph-books"></i> Your Library</li>
+                    <!-- Added IDs to these so JavaScript can find them -->
+                    <li id="nav-home" class="active"><i class="ph ph-house"></i> Home</li>
+                    <li id="nav-search"><i class="ph ph-magnifying-glass"></i> Search</li>
+                    <li id="nav-library"><i class="ph ph-books"></i> Your Library</li>
                 </ul>
                 
                 <div class="sidebar-divider"></div>
@@ -47,51 +49,71 @@
                     </div>
                     <div class="user-profile">
                         <img src="https://i.pravatar.cc/150?img=68" alt="User">
-                        <span>Jane Doe</span>
+                        <span>Namaste</span> <!-- Changed name to Namaste -->
                     </div>
                 </header>
 
-                <div class="hero">
-                    <div class="hero-content">
-                        <img id="main-cover" src="https://picsum.photos/id/1015/300/300" alt="Album Art">
-                        <div class="hero-text">
-                            <span class="type">Playlist</span>
-                            <h1 id="main-title">Focus & Flow</h1>
-                            <p id="main-artist" class="description">Keep calm and code on. Curated for deep work.</p>
-                            <div class="hero-meta">
-                                <i class="ph-fill ph-spotify-logo brand-icon"></i>
-                                <span>Miniify</span>
-                                <span class="dot">•</span>
-                                <span>3 songs</span>
+                <!-- 1. HOME VIEW -->
+                <section id="view-home" class="view-section active">
+                    <div class="hero">
+                        <div class="hero-content">
+                            <img id="main-cover" src="https://picsum.photos/id/1015/300/300" alt="Album Art">
+                            <div class="hero-text">
+                                <span class="type">Playlist</span>
+                                <h1 id="main-title">Focus & Flow</h1>
+                                <p id="main-artist" class="description">Keep calm and code on. Curated for deep work.</p>
+                                <div class="hero-meta">
+                                    <i class="ph-fill ph-spotify-logo brand-icon"></i>
+                                    <span>Miniify</span>
+                                    <span class="dot">•</span>
+                                    <span>4 songs</span>
+                                </div>
                             </div>
                         </div>
+                        <div class="hero-bg" id="hero-bg"></div>
                     </div>
-                    <!-- The background gradient overlay -->
-                    <div class="hero-bg" id="hero-bg"></div>
-                </div>
 
-                <div class="action-bar">
-                    <button class="play-btn-large" id="main-play-btn"><i class="ph-fill ph-play"></i></button>
-                    <button class="icon-btn"><i class="ph ph-heart"></i></button>
-                    <button class="icon-btn"><i class="ph ph-dots-three"></i></button>
-                </div>
+                    <div class="action-bar">
+                        <button class="play-btn-large" id="main-play-btn"><i class="ph-fill ph-play"></i></button>
+                        <button class="icon-btn"><i class="ph ph-heart"></i></button>
+                        <button class="icon-btn"><i class="ph ph-dots-three"></i></button>
+                    </div>
 
-                <!-- Track List -->
-                <div class="track-list">
-                    <div class="track-list-header">
-                        <span>#</span>
-                        <span>Title</span>
-                        <span>Album</span>
-                        <span><i class="ph ph-clock"></i></span>
+                    <div class="track-list">
+                        <div class="track-list-header">
+                            <span>#</span>
+                            <span>Title</span>
+                            <span>Album</span>
+                            <span><i class="ph ph-clock"></i></span>
+                        </div>
+                        <div id="tracks-container"></div>
                     </div>
-                    <div id="tracks-container">
-                        <!-- JS will populate tracks here -->
+                </section>
+
+                <!-- 2. SEARCH VIEW (Hidden by default) -->
+                <section id="view-search" class="view-section" style="display: none; padding: 0 32px;">
+                    <h2 style="color: white; margin-bottom: 20px;">Search</h2>
+                    <input type="text" placeholder="What do you want to listen to?" style="width: 100%; padding: 15px; border-radius: 30px; border: none; font-size: 16px; margin-bottom: 30px;">
+                    <h3 style="color: white; margin-bottom: 15px;">Browse All</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px;">
+                        <!-- Mock genre cards -->
+                        <div style="background: #E13300; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Podcasts</div>
+                        <div style="background: #1E3264; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Made For You</div>
+                        <div style="background: #E8115B; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">New Releases</div>
+                        <div style="background: #148A08; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Hip-Hop</div>
                     </div>
-                </div>
+                </section>
+
+                <!-- 3. LIBRARY VIEW (Hidden by default) -->
+                <section id="view-library" class="view-section" style="display: none; padding: 0 32px;">
+                    <h2 style="color: white; margin-bottom: 20px;">Your Library</h2>
+                    <p style="color: #b3b3b3;">You haven't saved any albums or playlists yet.</p>
+                </section>
+
             </main>
         </div>
 
-        <!-- Bottom Playbar -->
+        <!-- Bottom Playbar (Keep this exactly the same as your previous code) -->
         <footer class="playbar">
             <!-- Now Playing (Left) -->
             <div class="now-playing">
