@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miniify - Professional Edition</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="main-container">
+            
+            <!-- Left Sidebar -->
+            <nav class="sidebar">
+                <div class="logo">
+                    <i class="ph-fill ph-spotify-logo"></i>
+                    <h2>Miniify</h2>
+                </div>
+                
+                <ul class="nav-links">
+                    <li class="active"><i class="ph ph-house"></i> Home</li>
+                    <li><i class="ph ph-magnifying-glass"></i> Search</li>
+                    <li><i class="ph ph-books"></i> Your Library</li>
+                </ul>
+                
+                <div class="sidebar-divider"></div>
+                
+                <div class="playlist-header">
+                    <span>PLAYLISTS</span>
+                    <button id="theme-toggle" title="Toggle Theme"><i class="ph ph-moon"></i></button>
+                </div>
+                
+                <ul id="playlist-container" class="custom-scrollbar">
+                    <!-- JS will populate playlists here -->
+                </ul>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="main-view custom-scrollbar">
+                <header class="top-bar">
+                    <div class="nav-arrows">
+                        <button><i class="ph ph-caret-left"></i></button>
+                        <button><i class="ph ph-caret-right"></i></button>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://i.pravatar.cc/150?img=68" alt="User">
+                        <span>Jane Doe</span>
+                    </div>
+                </header>
+
+                <div class="hero">
+                    <div class="hero-content">
+                        <img id="main-cover" src="https://picsum.photos/id/1015/300/300" alt="Album Art">
+                        <div class="hero-text">
+                            <span class="type">Playlist</span>
+                            <h1 id="main-title">Focus & Flow</h1>
+                            <p id="main-artist" class="description">Keep calm and code on. Curated for deep work.</p>
+                            <div class="hero-meta">
+                                <i class="ph-fill ph-spotify-logo brand-icon"></i>
+                                <span>Miniify</span>
+                                <span class="dot">•</span>
+                                <span>3 songs</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- The background gradient overlay -->
+                    <div class="hero-bg" id="hero-bg"></div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="play-btn-large" id="main-play-btn"><i class="ph-fill ph-play"></i></button>
+                    <button class="icon-btn"><i class="ph ph-heart"></i></button>
+                    <button class="icon-btn"><i class="ph ph-dots-three"></i></button>
+                </div>
+
+                <!-- Track List -->
+                <div class="track-list">
+                    <div class="track-list-header">
+                        <span>#</span>
+                        <span>Title</span>
+                        <span>Album</span>
+                        <span><i class="ph ph-clock"></i></span>
+                    </div>
+                    <div id="tracks-container">
+                        <!-- JS will populate tracks here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Bottom Playbar -->
+        <footer class="playbar">
+            <!-- Now Playing (Left) -->
+            <div class="now-playing">
+                <img id="cover" src="https://picsum.photos/id/1015/300/300" alt="Cover">
+                <div class="track-info">
+                    <h4 id="song-title">Song Title</h4>
+                    <p id="song-artist">Artist</p>
+                </div>
+                <button class="icon-btn like-btn"><i class="ph ph-heart"></i></button>
+            </div>
+
+            <!-- Player Controls (Center) -->
+            <div class="player-controls">
+                <div class="control-buttons">
+                    <button id="speed-btn" class="text-btn" title="Speed">1x</button>
+                    <button id="prev-btn" class="icon-btn"><i class="ph-fill ph-skip-back"></i></button>
+                    <button id="play-btn" class="play-circle"><i class="ph-fill ph-play"></i></button>
+                    <button id="next-btn" class="icon-btn"><i class="ph-fill ph-skip-forward"></i></button>
+                    <button id="ff-btn" class="icon-btn" title="Forward 10s"><i class="ph ph-clock-clockwise"></i></button>
+                </div>
+                
+                <div class="playback-bar">
+                    <span id="current-time" class="time">0:00</span>
+                    <div class="progress-bar-bg" id="progress-container">
+                        <div class="progress-bar-fill" id="progress">
+                            <div class="progress-bar-thumb"></div>
+                        </div>
+                    </div>
+                    <span id="duration" class="time">0:00</span>
+                </div>
+            </div>
+
+            <!-- Extra Controls (Right) -->
+            <div class="extra-controls">
+                <button class="icon-btn"><i class="ph ph-microphone-stage"></i></button>
+                <button class="icon-btn"><i class="ph ph-devices"></i></button>
+                <div class="volume-control">
+                    <button class="icon-btn" id="mute-btn"><i class="ph ph-speaker-high"></i></button>
+                    <div class="progress-bar-bg" id="volume-container">
+                        <div class="progress-bar-fill" id="volume-progress" style="width: 100%;">
+                            <div class="progress-bar-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <audio id="audio-player"></audio>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
