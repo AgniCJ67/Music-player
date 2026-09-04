@@ -1,289 +1,177 @@
-const songs = [
-    { title: "Ambient Sunset", artist: "Chill Guy", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://picsum.photos/id/1015/300/300", time: "6:12" },
-    { title: "Midnight Drive", artist: "Synthwave", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://picsum.photos/id/1016/300/300", time: "7:05" },
-    { title: "Morning Routine", artist: "Coffee Beatz", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://picsum.photos/id/1018/300/300", time: "5:44" },
-    { title: "Code & Focus", artist: "LoFi Dreamer", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://picsum.photos/id/1020/300/300", time: "5:02" }
-];
-
-let songIndex = 0;
-let isPlaying = false;
-
-// Audio setup
-const audio = document.getElementById('audio-player');
-
-// Playbar elements
-const playBtn = document.getElementById('play-btn');
-const playBtnIcon = playBtn.querySelector('i');
-const mainPlayBtn = document.getElementById('main-play-btn');
-const mainPlayBtnIcon = mainPlayBtn.querySelector('i');
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-const ffBtn = document.getElementById('ff-btn');
-
-// Speed Slider
-const speedSlider = document.getElementById('speed-slider');
-const speedLabel = document.getElementById('speed-label');
-
-// Progress & Time
-const progress = document.getElementById('progress');
-const progressContainer = document.getElementById('progress-container');
-const currentTimeEl = document.getElementById('current-time');
+const video = document.getElementById('video');
+const videoContainer = document.getElementById('videoContainer');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const rewindBtn = document.getElementById('rewindBtn');
+const forwardBtn = document.getElementById('forwardBtn');
+const playIcon = document.querySelector('.play-icon');
+const pauseIcon = document.querySelector('.pause-icon');
+const progressSlider = document.getElementById('progressSlider');
+const progressBar = document.getElementById('progressBar');
+const muteBtn = document.getElementById('muteBtn');
+const volumeSlider = document.getElementById('volumeSlider');
+const currentTimeEl = document.getElementById('currentTime');
 const durationEl = document.getElementById('duration');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-// Volume Controls
-const volumeSlider = document.getElementById('volume-slider');
-const muteBtn = document.getElementById('mute-btn');
-const muteBtnIcon = muteBtn.querySelector('i');
-let lastVolume = 1;
+const emptyState = document.getElementById('emptyState');
+const videoTitleDisplay = document.getElementById('videoTitleDisplay');
+const videoInfoPanel = document.getElementById('videoInfoPanel');
+const speedBtn = document.getElementById('speedBtn');
+const speedOptions = document.getElementById('speedOptions');
 
-// Info Elements
-const title = document.getElementById('song-title');
-const artist = document.getElementById('song-artist');
-const cover = document.getElementById('cover');
-const mainTitle = document.getElementById('main-title');
-const mainArtist = document.getElementById('main-artist');
-const mainCover = document.getElementById('main-cover');
+const appImportBtn = document.getElementById('appImportBtn');
+const appVideoUpload = document.getElementById('appVideoUpload');
+const themeSelect = document.getElementById('themeSelect');
 
-const tracksContainer = document.getElementById('tracks-container');
-const sidebarPlaylist = document.getElementById('playlist-container');
+let isScrubbing = false;
+let controlsTimeout;
 
-// Initialization
-loadSong(songs[songIndex]);
-renderTracks();
-renderSidebar();
-
-// Load Song
-function loadSong(song) {
-    title.innerText = song.title;
-    artist.innerText = song.artist;
-    cover.src = song.cover;
-    
-    mainTitle.innerText = song.title;
-    mainArtist.innerText = song.artist;
-    mainCover.src = song.cover;
-    
-    audio.src = song.src;
-    audio.playbackRate = parseFloat(speedSlider.value);
-    
-    updateTrackListUI();
-}
-
-// Render Main Track List
-function renderTracks() {
-    tracksContainer.innerHTML = '';
-    songs.forEach((song, index) => {
-        const row = document.createElement('div');
-        row.classList.add('track-row');
-        row.innerHTML = `
-            <div class="track-num">${index + 1}</div>
-            <div class="track-info-cell">
-                <img src="${song.cover}" class="track-img" alt="">
-                <div>
-                    <div class="track-title">${song.title}</div>
-                    <div class="track-artist">${song.artist}</div>
-                </div>
-            </div>
-            <div class="track-album">Miniify Hits</div>
-            <div class="track-time">${song.time || "--:--"}</div>
-        `;
-        
-        row.addEventListener('click', () => {
-            songIndex = index;
-            loadSong(songs[songIndex]);
-            playSong();
-        });
-        
-        tracksContainer.appendChild(row);
-    });
-    updateTrackListUI();
-}
-
-// Render Sidebar dummy playlists
-function renderSidebar() {
-    sidebarPlaylist.innerHTML = '';
-    const playlists = ["Chill Vibes", "Coding Mix", "Workout Pump", "Lo-Fi Beats", "Top 50 Global"];
-    playlists.forEach(name => {
-        const li = document.createElement('li');
-        li.innerText = name;
-        sidebarPlaylist.appendChild(li);
-    });
-}
-
-function updateTrackListUI() {
-    const rows = tracksContainer.querySelectorAll('.track-row');
-    rows.forEach((row, index) => {
-        if(index === songIndex) {
-            row.classList.add('playing');
-        } else {
-            row.classList.remove('playing');
-        }
-    });
-}
-
-// Play & Pause logic
-function playSong() {
-    isPlaying = true;
-    playBtnIcon.classList.replace('ph-play', 'ph-pause');
-    mainPlayBtnIcon.classList.replace('ph-play', 'ph-pause');
-    audio.play();
-}
-
-function pauseSong() {
-    isPlaying = false;
-    playBtnIcon.classList.replace('ph-pause', 'ph-play');
-    mainPlayBtnIcon.classList.replace('ph-pause', 'ph-play');
-    audio.pause();
-}
-
-playBtn.addEventListener('click', () => isPlaying ? pauseSong() : playSong());
-mainPlayBtn.addEventListener('click', () => isPlaying ? pauseSong() : playSong());
-
-// Next / Prev
-prevBtn.addEventListener('click', () => {
-    songIndex = (songIndex - 1 + songs.length) % songs.length;
-    loadSong(songs[songIndex]);
-    playSong();
-});
-
-nextBtn.addEventListener('click', () => {
-    songIndex = (songIndex + 1) % songs.length;
-    loadSong(songs[songIndex]);
-    playSong();
-});
-audio.addEventListener('ended', () => nextBtn.click());
-
-// Fast Forward
-ffBtn.addEventListener('click', () => { audio.currentTime += 10; });
-
-// Speed Slider Event
-speedSlider.addEventListener('input', (e) => {
-    const currentSpeed = parseFloat(e.target.value);
-    audio.playbackRate = currentSpeed;
-    if(Number.isInteger(currentSpeed)) {
-        speedLabel.innerText = `${currentSpeed}.0x`;
-    } else {
-        speedLabel.innerText = `${currentSpeed}x`;
+// --- Mobile Controls Visibility ---
+function showControls() {
+    videoContainer.classList.add('show-controls');
+    clearTimeout(controlsTimeout);
+    if (!video.paused) {
+        controlsTimeout = setTimeout(() => {
+            videoContainer.classList.remove('show-controls');
+        }, 2500); // Hide after 2.5s of playing
     }
+}
+videoContainer.addEventListener('mousemove', showControls);
+videoContainer.addEventListener('touchstart', showControls);
+videoContainer.addEventListener('click', showControls);
+
+// --- Video State ---
+video.addEventListener('play', () => {
+    videoContainer.classList.remove('paused');
+    playIcon.style.display = 'none';
+    pauseIcon.style.display = 'block';
+    showControls();
 });
 
-// Time formatting
+video.addEventListener('pause', () => {
+    videoContainer.classList.add('paused');
+    playIcon.style.display = 'block';
+    pauseIcon.style.display = 'none';
+    showControls();
+});
+
+function togglePlay(e) {
+    if (!video.src || videoContainer.classList.contains('no-media')) return;
+    if (e.target.closest('.controls') && e.target !== playPauseBtn) return; // Don't pause if clicking other buttons
+    
+    if (video.paused) video.play().catch(e => console.error(e));
+    else video.pause();
+}
+playPauseBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(e); });
+video.addEventListener('click', togglePlay);
+
+// --- Rewind & Fast Forward ---
+rewindBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    video.currentTime = Math.max(0, video.currentTime - 10);
+    showControls();
+});
+
+forwardBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    video.currentTime = Math.min(video.duration, video.currentTime + 10);
+    showControls();
+});
+
+// --- Time and Progress ---
 function formatTime(time) {
     if (isNaN(time)) return "0:00";
-    let mins = Math.floor(time / 60);
-    let secs = Math.floor(time % 60);
-    return `${mins}:${secs < 10 ? '0'+secs : secs}`;
+    const min = Math.floor(time / 60);
+    const sec = Math.floor(time % 60);
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
 }
 
-// Progress Bar Updates
-audio.addEventListener('timeupdate', (e) => {
-    const { duration, currentTime } = e.srcElement;
-    if (duration) {
-        progress.style.width = `${(currentTime / duration) * 100}%`;
-        currentTimeEl.innerText = formatTime(currentTime);
-        durationEl.innerText = formatTime(duration);
+video.addEventListener('loadedmetadata', () => { durationEl.textContent = formatTime(video.duration); });
+video.addEventListener('timeupdate', () => {
+    if (!isScrubbing) {
+        const percent = (video.currentTime / video.duration) * 100;
+        progressBar.style.width = `${percent}%`;
+        progressSlider.value = percent;
+        currentTimeEl.textContent = formatTime(video.currentTime);
     }
 });
 
-progressContainer.addEventListener('click', (e) => {
-    const width = progressContainer.clientWidth;
-    const clickX = e.offsetX;
-    audio.currentTime = (clickX / width) * audio.duration;
+progressSlider.addEventListener('input', (e) => {
+    if (videoContainer.classList.contains('no-media')) return;
+    isScrubbing = true;
+    const percent = e.target.value;
+    progressBar.style.width = `${percent}%`;
+    currentTimeEl.textContent = formatTime((percent / 100) * video.duration);
+    showControls();
 });
 
-// --- Volume Slider Controls ---
-volumeSlider.addEventListener('input', (e) => {
-    const vol = parseFloat(e.target.value);
-    audio.volume = vol;
-    lastVolume = vol; 
-    updateVolumeIcon(vol);
+progressSlider.addEventListener('change', (e) => {
+    if (videoContainer.classList.contains('no-media')) return;
+    video.currentTime = (e.target.value / 100) * video.duration;
+    isScrubbing = false;
 });
 
-function updateVolumeIcon(vol) {
-    muteBtnIcon.className = ''; 
-    if (vol === 0) {
-        muteBtnIcon.classList.add('ph', 'ph-speaker-x');
-    } else if (vol < 0.5) {
-        muteBtnIcon.classList.add('ph', 'ph-speaker-low');
+// --- Popups ---
+function closePopups() { speedOptions.classList.remove('active'); }
+speedBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isActive = speedOptions.classList.contains('active');
+    closePopups();
+    if (!isActive) speedOptions.classList.add('active');
+    showControls();
+});
+
+document.querySelectorAll('#speedOptions .popup-option').forEach(opt => {
+    opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        video.playbackRate = opt.dataset.speed;
+        speedBtn.textContent = `${opt.dataset.speed}x`;
+        document.querySelector('#speedOptions .active').classList.remove('active');
+        opt.classList.add('active');
+        closePopups();
+    });
+});
+document.addEventListener('click', closePopups);
+
+fullscreenBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (videoContainer.classList.contains('no-media')) return;
+    if (!document.fullscreenElement) {
+        if (videoContainer.requestFullscreen) videoContainer.requestFullscreen();
+        else if (videoContainer.webkitRequestFullscreen) videoContainer.webkitRequestFullscreen();
     } else {
-        muteBtnIcon.classList.add('ph', 'ph-speaker-high');
-    }
-}
-
-muteBtn.addEventListener('click', () => {
-    if (audio.volume > 0) {
-        lastVolume = audio.volume;
-        audio.volume = 0;
-        volumeSlider.value = 0;
-    } else {
-        audio.volume = lastVolume > 0 ? lastVolume : 1; 
-        volumeSlider.value = audio.volume;
-    }
-    updateVolumeIcon(audio.volume);
-});
-
-// Theme Toggle
-const themeToggle = document.getElementById('theme-toggle');
-const themeIcon = themeToggle.querySelector('i');
-themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('light-theme');
-    if (document.body.classList.contains('light-theme')) {
-        themeIcon.classList.replace('ph-moon', 'ph-sun');
-    } else {
-        themeIcon.classList.replace('ph-sun', 'ph-moon');
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
 });
 
-// Navigation Tab Logic
-const navHome = document.getElementById('nav-home');
-const navSearch = document.getElementById('nav-search');
-const navLibrary = document.getElementById('nav-library');
-const viewHome = document.getElementById('view-home');
-const viewSearch = document.getElementById('view-search');
-const viewLibrary = document.getElementById('view-library');
+// --- App Sidebar & File Import ---
+appImportBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    appVideoUpload.click();
+});
 
-function switchView(selectedNav, selectedView) {
-    navHome.classList.remove('active');
-    navSearch.classList.remove('active');
-    navLibrary.classList.remove('active');
-    
-    viewHome.style.display = 'none';
-    viewSearch.style.display = 'none';
-    viewLibrary.style.display = 'none';
-    
-    selectedNav.classList.add('active');
-    selectedView.style.display = 'block';
-}
-
-navHome.addEventListener('click', () => switchView(navHome, viewHome));
-navSearch.addEventListener('click', () => switchView(navSearch, viewSearch));
-navLibrary.addEventListener('click', () => switchView(navLibrary, viewLibrary));
-
-// Play Local Audio File Logic
-const navLocalFile = document.getElementById('nav-local-file');
-const localFileInput = document.getElementById('local-file-input');
-
-navLocalFile.addEventListener('click', () => localFileInput.click());
-
-localFileInput.addEventListener('change', function() {
-    const file = this.files[0];
+appVideoUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
     if (file) {
         const fileURL = URL.createObjectURL(file);
-        const cleanTitle = file.name.replace(/\.[^/.]+$/, "");
+        video.src = fileURL;
+        video.load(); 
         
-        const customSong = {
-            title: cleanTitle,
-            artist: "Local File",
-            src: fileURL,
-            cover: "https://picsum.photos/id/1025/300/300",
-            time: "--:--"
-        };
+        videoContainer.classList.remove('no-media');
+        if (emptyState) emptyState.style.display = 'none'; // Force hide
         
-        songs.push(customSong);
-        songIndex = songs.length - 1;
+        videoInfoPanel.style.opacity = '1';
+        videoInfoPanel.style.pointerEvents = 'auto';
+        videoTitleDisplay.textContent = file.name.replace(/\.[^/.]+$/, "");
+        progressBar.style.width = `0%`;
+        progressSlider.value = 0;
         
-        renderTracks();
-        loadSong(songs[songIndex]);
-        playSong();
-        switchView(navHome, viewHome);
+        video.play().catch(err => console.error("Autoplay blocked:", err));
+        e.target.value = ''; 
     }
+});
+
+themeSelect.addEventListener('change', (e) => {
+    document.documentElement.setAttribute('data-theme', e.target.value);
 });
