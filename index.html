@@ -6,7 +6,6 @@
     <title>Miniify - Professional Edition</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Using CSS to load Phosphor icons so Brave doesn't block them -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
 </head>
@@ -22,10 +21,15 @@
                 </div>
                 
                 <ul class="nav-links">
-                    <!-- Added IDs to these so JavaScript can find them -->
                     <li id="nav-home" class="active"><i class="ph ph-house"></i> Home</li>
                     <li id="nav-search"><i class="ph ph-magnifying-glass"></i> Search</li>
                     <li id="nav-library"><i class="ph ph-books"></i> Your Library</li>
+                    
+                    <!-- NEW: Play Local File Button -->
+                    <li id="nav-local-file">
+                        <i class="ph ph-folder-plus"></i> Play Local File
+                        <input type="file" id="local-file-input" accept="audio/*" style="display: none;">
+                    </li>
                 </ul>
                 
                 <div class="sidebar-divider"></div>
@@ -49,7 +53,7 @@
                     </div>
                     <div class="user-profile">
                         <img src="https://i.pravatar.cc/150?img=68" alt="User">
-                        <span>Namaste</span> <!-- Changed name to Namaste -->
+                        <span>Namaste</span>
                     </div>
                 </header>
 
@@ -65,8 +69,6 @@
                                 <div class="hero-meta">
                                     <i class="ph-fill ph-spotify-logo brand-icon"></i>
                                     <span>Miniify</span>
-                                    <span class="dot">•</span>
-                                    <span>4 songs</span>
                                 </div>
                             </div>
                         </div>
@@ -90,13 +92,12 @@
                     </div>
                 </section>
 
-                <!-- 2. SEARCH VIEW (Hidden by default) -->
+                <!-- 2. SEARCH VIEW -->
                 <section id="view-search" class="view-section" style="display: none; padding: 0 32px;">
                     <h2 style="color: white; margin-bottom: 20px;">Search</h2>
                     <input type="text" placeholder="What do you want to listen to?" style="width: 100%; padding: 15px; border-radius: 30px; border: none; font-size: 16px; margin-bottom: 30px;">
                     <h3 style="color: white; margin-bottom: 15px;">Browse All</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px;">
-                        <!-- Mock genre cards -->
                         <div style="background: #E13300; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Podcasts</div>
                         <div style="background: #1E3264; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Made For You</div>
                         <div style="background: #E8115B; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">New Releases</div>
@@ -104,16 +105,15 @@
                     </div>
                 </section>
 
-                <!-- 3. LIBRARY VIEW (Hidden by default) -->
+                <!-- 3. LIBRARY VIEW -->
                 <section id="view-library" class="view-section" style="display: none; padding: 0 32px;">
                     <h2 style="color: white; margin-bottom: 20px;">Your Library</h2>
                     <p style="color: #b3b3b3;">You haven't saved any albums or playlists yet.</p>
                 </section>
-
             </main>
         </div>
 
-        <!-- Bottom Playbar (Keep this exactly the same as your previous code) -->
+        <!-- Bottom Playbar -->
         <footer class="playbar">
             <!-- Now Playing (Left) -->
             <div class="now-playing">
@@ -128,7 +128,13 @@
             <!-- Player Controls (Center) -->
             <div class="player-controls">
                 <div class="control-buttons">
-                    <button id="speed-btn" class="text-btn" title="Speed">1x</button>
+                    
+                    <!-- NEW: Speed Slider Control -->
+                    <div class="speed-slider-container">
+                        <span id="speed-label" class="time">1.0x</span>
+                        <input type="range" id="speed-slider" min="0.25" max="2.5" step="0.25" value="1" title="Adjust Speed">
+                    </div>
+
                     <button id="prev-btn" class="icon-btn"><i class="ph-fill ph-skip-back"></i></button>
                     <button id="play-btn" class="play-circle"><i class="ph-fill ph-play"></i></button>
                     <button id="next-btn" class="icon-btn"><i class="ph-fill ph-skip-forward"></i></button>
