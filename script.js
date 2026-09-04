@@ -31,10 +31,11 @@ const currentTimeEl = document.getElementById('current-time');
 const durationEl = document.getElementById('duration');
 
 // Volume
-const volumeContainer = document.getElementById('volume-container');
-const volumeProgress = document.getElementById('volume-progress');
+const volumeSlider = document.getElementById('volume-slider');
 const muteBtn = document.getElementById('mute-btn');
 const muteBtnIcon = muteBtn.querySelector('i');
+let lastVolume = 1;
+
 
 // Info Elements
 const title = document.getElementById('song-title');
@@ -198,15 +199,41 @@ progressContainer.addEventListener('click', (e) => {
     audio.currentTime = (clickX / width) * audio.duration;
 });
 
-// Volume Controls
-volumeContainer.addEventListener('click', (e) => {
-    const width = volumeContainer.clientWidth;
-    const clickX = e.offsetX;
-    const vol = clickX / width;
+// Volume Slider Controls
+volumeSlider.addEventListener('input', (e) => {
+    const vol = parseFloat(e.target.value);
     audio.volume = vol;
-    volumeProgress.style.width = `${vol * 100}%`;
+    lastVolume = vol; // Remember this volume if we mute later
     updateVolumeIcon(vol);
 });
+
+// Update the icon based on volume level
+function updateVolumeIcon(vol) {
+    muteBtnIcon.className = ''; 
+    if (vol === 0) {
+        muteBtnIcon.classList.add('ph', 'ph-speaker-x');
+    } else if (vol < 0.5) {
+        muteBtnIcon.classList.add('ph', 'ph-speaker-low');
+    } else {
+        muteBtnIcon.classList.add('ph', 'ph-speaker-high');
+    }
+}
+
+// Mute / Unmute Button
+muteBtn.addEventListener('click', () => {
+    if (audio.volume > 0) {
+        // Mute it
+        lastVolume = audio.volume;
+        audio.volume = 0;
+        volumeSlider.value = 0;
+    } else {
+        // Unmute it
+        audio.volume = lastVolume > 0 ? lastVolume : 1; 
+        volumeSlider.value = audio.volume;
+    }
+    updateVolumeIcon(audio.volume);
+});
+
 
 function updateVolumeIcon(vol) {
     muteBtnIcon.className = ''; 
