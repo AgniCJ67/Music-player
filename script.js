@@ -19,7 +19,10 @@ const mainPlayBtnIcon = mainPlayBtn.querySelector('i');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const ffBtn = document.getElementById('ff-btn');
-const speedBtn = document.getElementById('speed-btn');
+
+// Speed Slider
+const speedSlider = document.getElementById('speed-slider');
+const speedLabel = document.getElementById('speed-label');
 
 // Progress & Time
 const progress = document.getElementById('progress');
@@ -55,10 +58,15 @@ function loadSong(song) {
     artist.innerText = song.artist;
     cover.src = song.cover;
     
-    // For single album view mock, we don't change the hero text, but we'll change the image
+    mainTitle.innerText = song.title;
+    mainArtist.innerText = song.artist;
     mainCover.src = song.cover;
     
     audio.src = song.src;
+    
+    // Ensure speed matches slider when a new song loads
+    audio.playbackRate = parseFloat(speedSlider.value);
+    
     updateTrackListUI();
 }
 
@@ -78,7 +86,7 @@ function renderTracks() {
                 </div>
             </div>
             <div class="track-album">Miniify Hits</div>
-            <div class="track-time">${song.time}</div>
+            <div class="track-time">${song.time || "--:--"}</div>
         `;
         
         row.addEventListener('click', () => {
@@ -152,13 +160,17 @@ audio.addEventListener('ended', () => nextBtn.click());
 // Fast Forward
 ffBtn.addEventListener('click', () => { audio.currentTime += 10; });
 
-// Speed
-const speeds = [1, 1.25, 1.5, 2];
-let speedIndex = 0;
-speedBtn.addEventListener('click', () => {
-    speedIndex = (speedIndex + 1) % speeds.length;
-    audio.playbackRate = speeds[speedIndex];
-    speedBtn.innerText = `${speeds[speedIndex]}x`;
+// --- NEW: Speed Slider Event ---
+speedSlider.addEventListener('input', (e) => {
+    const currentSpeed = parseFloat(e.target.value);
+    audio.playbackRate = currentSpeed;
+    
+    // Format label to show "1.0x", "1.25x", etc.
+    if(Number.isInteger(currentSpeed)) {
+        speedLabel.innerText = `${currentSpeed}.0x`;
+    } else {
+        speedLabel.innerText = `${currentSpeed}x`;
+    }
 });
 
 // Time formatting
@@ -227,44 +239,74 @@ themeToggle.addEventListener('click', () => {
         themeIcon.classList.replace('ph-sun', 'ph-moon');
     }
 });
-// --- Navigation Tab Logic --- //
 
-// 1. Get the sidebar buttons
+// --- Navigation Tab Logic ---
 const navHome = document.getElementById('nav-home');
 const navSearch = document.getElementById('nav-search');
 const navLibrary = document.getElementById('nav-library');
 
-// 2. Get the screen sections
 const viewHome = document.getElementById('view-home');
 const viewSearch = document.getElementById('view-search');
 const viewLibrary = document.getElementById('view-library');
 
-// Function to hide everything and show only the selected page
 function switchView(selectedNav, selectedView) {
-    // Remove "active" class from all sidebar links
     navHome.classList.remove('active');
     navSearch.classList.remove('active');
     navLibrary.classList.remove('active');
     
-    // Hide all sections
     viewHome.style.display = 'none';
     viewSearch.style.display = 'none';
     viewLibrary.style.display = 'none';
     
-    // Highlight the clicked link and show the correct section
     selectedNav.classList.add('active');
     selectedView.style.display = 'block';
 }
 
-// 3. Add Event Listeners for clicks
-navHome.addEventListener('click', () => {
-    switchView(navHome, viewHome);
+navHome.addEventListener('click', () => switchView(navHome, viewHome));
+navSearch.addEventListener('click', () => switchView(navSearch, viewSearch));
+navLibrary.addEventListener('click', () => switchView(navLibrary, viewLibrary));
+
+// --- NEW: Play Local Audio File Logic ---
+const navLocalFile = document.getElementById('nav-local-file');
+const localFileInput = document.getElementById('local-file-input');
+
+// When user clicks the sidebar item, trigger the hidden file input
+navLocalFile.addEventListener('click', () => {
+    localFileInput.click();
 });
 
-navSearch.addEventListener('click', () => {
-    switchView(navSearch, viewSearch);
-});
-
-navLibrary.addEventListener('click', () => {
-    switchView(navLibrary, viewLibrary);
+// When user selects a file from their device
+localFileInput.addEventListener('change', function() {
+    const file = this.files[0];
+    
+    if (file) {
+        // Create a temporary URL for the local file
+        const fileURL = URL.createObjectURL(file);
+        
+        // Remove .mp3 or .wav from the title so it looks clean
+        const cleanTitle = file.name.replace(/\.[^/.]+$/, "");
+        
+        // Create a new song object
+        const customSong = {
+            title: cleanTitle,
+            artist: "Local File",
+            src: fileURL,
+            cover: "https://picsum.photos/id/1025/300/300", // Default cover for local files
+            time: "--:--"
+        };
+        
+        // Add it to our playlist array
+        songs.push(customSong);
+        
+        // Set index to the new song and play it
+        songIndex = songs.length - 1;
+        
+        // Re-render the tracklist and play
+        renderTracks();
+        loadSong(songs[songIndex]);
+        playSong();
+        
+        // Make sure we switch back to the home view to see the new track
+        switchView(navHome, viewHome);
+    }
 });
