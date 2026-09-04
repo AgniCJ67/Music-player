@@ -3,170 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miniify - Professional Edition</title>
+    <title>Professional Custom Video Player</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
 </head>
 <body>
-    <div class="app-wrapper">
-        <div class="main-container">
-            
-            <!-- Left Sidebar -->
-            <nav class="sidebar">
-                <div class="logo">
-                    <i class="ph-fill ph-spotify-logo"></i>
-                    <h2>Miniify</h2>
+
+    <div class="video-container paused" id="videoContainer">
+        <video id="video">
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <div class="controls">
+            <!-- Scroll/Progress Bar -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="controls-main">
+                <div class="controls-left">
+                    <!-- Play / Pause -->
+                    <button class="btn" id="playPauseBtn" title="Play/Pause">
+                        <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg class="pause-icon" style="display: none;" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+
+                    <!-- Volume / Audio -->
+                    <div class="volume-container">
+                        <button class="btn" id="muteBtn" title="Mute/Unmute">
+                            <svg class="volume-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                            <svg class="mute-icon" style="display: none;" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                        </button>
+                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1">
+                    </div>
+
+                    <!-- Time tracker -->
+                    <div class="time">
+                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                    </div>
                 </div>
-                
-                <ul class="nav-links">
-                    <li id="nav-home" class="active"><i class="ph ph-house"></i> Home</li>
-                    <li id="nav-search"><i class="ph ph-magnifying-glass"></i> Search</li>
-                    <li id="nav-library"><i class="ph ph-books"></i> Your Library</li>
+
+                <div class="controls-right">
                     
-                    <!-- NEW: Play Local File Button -->
-                    <li id="nav-local-file">
-                        <i class="ph ph-folder-plus"></i> Play Local File
-                        <input type="file" id="local-file-input" accept="audio/*" style="display: none;">
-                    </li>
-                </ul>
-                
-                <div class="sidebar-divider"></div>
-                
-                <div class="playlist-header">
-                    <span>PLAYLISTS</span>
-                    <button id="theme-toggle" title="Toggle Theme"><i class="ph ph-moon"></i></button>
+                    <!-- Hidden File Input for Device Videos -->
+                    <input type="file" id="videoUpload" accept="video/*" style="display: none;">
+                    
+                    <!-- Upload/Open File Button -->
+                    <button class="btn" id="uploadBtn" title="Open Video File">
+                        <!-- Folder Icon -->
+                        <svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+                    </button>
+
+                    <!-- Speed Adjuster -->
+                    <div class="speed-control">
+                        <button class="btn speed-btn" id="speedBtn">1x</button>
+                        <div class="speed-options" id="speedOptions">
+                            <div class="speed-option" data-speed="0.5">0.5x</div>
+                            <div class="speed-option" data-speed="0.75">0.75x</div>
+                            <div class="speed-option active" data-speed="1">1x Normal</div>
+                            <div class="speed-option" data-speed="1.25">1.25x</div>
+                            <div class="speed-option" data-speed="1.5">1.5x</div>
+                            <div class="speed-option" data-speed="2">2x</div>
+                        </div>
+                    </div>
+
+                    <!-- Fullscreen -->
+                    <button class="btn" id="fullscreenBtn" title="Fullscreen">
+                        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                    </button>
                 </div>
-                
-                <ul id="playlist-container" class="custom-scrollbar">
-                    <!-- JS will populate playlists here -->
-                </ul>
-            </nav>
-
-            <!-- Main Content Area -->
-            <main class="main-view custom-scrollbar">
-                <header class="top-bar">
-                    <div class="nav-arrows">
-                        <button><i class="ph ph-caret-left"></i></button>
-                        <button><i class="ph ph-caret-right"></i></button>
-                    </div>
-                    <div class="user-profile">
-                        <img src="https://i.pravatar.cc/150?img=68" alt="User">
-                        <span>Namaste</span>
-                    </div>
-                </header>
-
-                <!-- 1. HOME VIEW -->
-                <section id="view-home" class="view-section active">
-                    <div class="hero">
-                        <div class="hero-content">
-                            <img id="main-cover" src="https://picsum.photos/id/1015/300/300" alt="Album Art">
-                            <div class="hero-text">
-                                <span class="type">Playlist</span>
-                                <h1 id="main-title">Focus & Flow</h1>
-                                <p id="main-artist" class="description">Keep calm and code on. Curated for deep work.</p>
-                                <div class="hero-meta">
-                                    <i class="ph-fill ph-spotify-logo brand-icon"></i>
-                                    <span>Miniify</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hero-bg" id="hero-bg"></div>
-                    </div>
-
-                    <div class="action-bar">
-                        <button class="play-btn-large" id="main-play-btn"><i class="ph-fill ph-play"></i></button>
-                        <button class="icon-btn"><i class="ph ph-heart"></i></button>
-                        <button class="icon-btn"><i class="ph ph-dots-three"></i></button>
-                    </div>
-
-                    <div class="track-list">
-                        <div class="track-list-header">
-                            <span>#</span>
-                            <span>Title</span>
-                            <span>Album</span>
-                            <span><i class="ph ph-clock"></i></span>
-                        </div>
-                        <div id="tracks-container"></div>
-                    </div>
-                </section>
-
-                <!-- 2. SEARCH VIEW -->
-                <section id="view-search" class="view-section" style="display: none; padding: 0 32px;">
-                    <h2 style="color: white; margin-bottom: 20px;">Search</h2>
-                    <input type="text" placeholder="What do you want to listen to?" style="width: 100%; padding: 15px; border-radius: 30px; border: none; font-size: 16px; margin-bottom: 30px;">
-                    <h3 style="color: white; margin-bottom: 15px;">Browse All</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px;">
-                        <div style="background: #E13300; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Podcasts</div>
-                        <div style="background: #1E3264; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Made For You</div>
-                        <div style="background: #E8115B; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">New Releases</div>
-                        <div style="background: #148A08; height: 150px; border-radius: 8px; padding: 16px; color: white; font-weight: bold;">Hip-Hop</div>
-                    </div>
-                </section>
-
-                <!-- 3. LIBRARY VIEW -->
-                <section id="view-library" class="view-section" style="display: none; padding: 0 32px;">
-                    <h2 style="color: white; margin-bottom: 20px;">Your Library</h2>
-                    <p style="color: #b3b3b3;">You haven't saved any albums or playlists yet.</p>
-                </section>
-            </main>
+            </div>
         </div>
-
-                <!-- Bottom Playbar -->
-        <footer class="playbar">
-            <!-- Now Playing (Left) -->
-            <div class="now-playing">
-                <img id="cover" src="https://picsum.photos/id/1015/300/300" alt="Cover">
-                <div class="track-info">
-                    <h4 id="song-title">Song Title</h4>
-                    <p id="song-artist">Artist</p>
-                </div>
-                <button class="icon-btn like-btn"><i class="ph ph-heart"></i></button>
-            </div>
-
-            <!-- Player Controls (Center) -->
-            <div class="player-controls">
-                <div class="control-buttons">
-                    <!-- Speed Slider Control -->
-                    <div class="speed-slider-container">
-                        <span id="speed-label" class="time">1.0x</span>
-                        <input type="range" id="speed-slider" class="custom-slider" min="0.25" max="2.5" step="0.25" value="1" title="Adjust Speed">
-                    </div>
-
-                    <button id="prev-btn" class="icon-btn"><i class="ph-fill ph-skip-back"></i></button>
-                    <button id="play-btn" class="play-circle"><i class="ph-fill ph-play"></i></button>
-                    <button id="next-btn" class="icon-btn"><i class="ph-fill ph-skip-forward"></i></button>
-                    <button id="ff-btn" class="icon-btn" title="Forward 10s"><i class="ph ph-clock-clockwise"></i></button>
-                </div>
-                
-                <div class="playback-bar">
-                    <span id="current-time" class="time">0:00</span>
-                    <div class="progress-bar-bg" id="progress-container">
-                        <div class="progress-bar-fill" id="progress">
-                            <div class="progress-bar-thumb"></div>
-                        </div>
-                    </div>
-                    <span id="duration" class="time">0:00</span>
-                </div>
-            </div>
-
-            <!-- Extra Controls (Right) -->
-            <div class="extra-controls">
-                <button class="icon-btn"><i class="ph ph-microphone-stage"></i></button>
-                <button class="icon-btn"><i class="ph ph-devices"></i></button>
-                <!-- NEW: Draggable Volume Slider -->
-                <div class="volume-control">
-                    <button class="icon-btn" id="mute-btn"><i class="ph ph-speaker-high"></i></button>
-                    <input type="range" id="volume-slider" class="custom-slider" min="0" max="1" step="0.01" value="1" title="Volume">
-                </div>
-            </div>
-        </footer>
-
-        
-
-        <audio id="audio-player"></audio>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
