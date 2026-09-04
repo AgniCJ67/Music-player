@@ -30,12 +30,11 @@ const progressContainer = document.getElementById('progress-container');
 const currentTimeEl = document.getElementById('current-time');
 const durationEl = document.getElementById('duration');
 
-// Volume
+// Volume Controls
 const volumeSlider = document.getElementById('volume-slider');
 const muteBtn = document.getElementById('mute-btn');
 const muteBtnIcon = muteBtn.querySelector('i');
 let lastVolume = 1;
-
 
 // Info Elements
 const title = document.getElementById('song-title');
@@ -64,8 +63,6 @@ function loadSong(song) {
     mainCover.src = song.cover;
     
     audio.src = song.src;
-    
-    // Ensure speed matches slider when a new song loads
     audio.playbackRate = parseFloat(speedSlider.value);
     
     updateTrackListUI();
@@ -103,6 +100,7 @@ function renderTracks() {
 
 // Render Sidebar dummy playlists
 function renderSidebar() {
+    sidebarPlaylist.innerHTML = '';
     const playlists = ["Chill Vibes", "Coding Mix", "Workout Pump", "Lo-Fi Beats", "Top 50 Global"];
     playlists.forEach(name => {
         const li = document.createElement('li');
@@ -137,12 +135,8 @@ function pauseSong() {
     audio.pause();
 }
 
-function togglePlay() {
-    isPlaying ? pauseSong() : playSong();
-}
-
-playBtn.addEventListener('click', togglePlay);
-mainPlayBtn.addEventListener('click', togglePlay);
+playBtn.addEventListener('click', () => isPlaying ? pauseSong() : playSong());
+mainPlayBtn.addEventListener('click', () => isPlaying ? pauseSong() : playSong());
 
 // Next / Prev
 prevBtn.addEventListener('click', () => {
@@ -161,12 +155,10 @@ audio.addEventListener('ended', () => nextBtn.click());
 // Fast Forward
 ffBtn.addEventListener('click', () => { audio.currentTime += 10; });
 
-// --- NEW: Speed Slider Event ---
+// Speed Slider Event
 speedSlider.addEventListener('input', (e) => {
     const currentSpeed = parseFloat(e.target.value);
     audio.playbackRate = currentSpeed;
-    
-    // Format label to show "1.0x", "1.25x", etc.
     if(Number.isInteger(currentSpeed)) {
         speedLabel.innerText = `${currentSpeed}.0x`;
     } else {
@@ -192,22 +184,20 @@ audio.addEventListener('timeupdate', (e) => {
     }
 });
 
-// Seek Functionality
 progressContainer.addEventListener('click', (e) => {
     const width = progressContainer.clientWidth;
     const clickX = e.offsetX;
     audio.currentTime = (clickX / width) * audio.duration;
 });
 
-// Volume Slider Controls
+// --- Volume Slider Controls ---
 volumeSlider.addEventListener('input', (e) => {
     const vol = parseFloat(e.target.value);
     audio.volume = vol;
-    lastVolume = vol; // Remember this volume if we mute later
+    lastVolume = vol; 
     updateVolumeIcon(vol);
 });
 
-// Update the icon based on volume level
 function updateVolumeIcon(vol) {
     muteBtnIcon.className = ''; 
     if (vol === 0) {
@@ -219,38 +209,14 @@ function updateVolumeIcon(vol) {
     }
 }
 
-// Mute / Unmute Button
 muteBtn.addEventListener('click', () => {
     if (audio.volume > 0) {
-        // Mute it
         lastVolume = audio.volume;
         audio.volume = 0;
         volumeSlider.value = 0;
     } else {
-        // Unmute it
         audio.volume = lastVolume > 0 ? lastVolume : 1; 
         volumeSlider.value = audio.volume;
-    }
-    updateVolumeIcon(audio.volume);
-});
-
-
-function updateVolumeIcon(vol) {
-    muteBtnIcon.className = ''; 
-    if (vol === 0) muteBtnIcon.classList.add('ph', 'ph-speaker-x');
-    else if (vol < 0.5) muteBtnIcon.classList.add('ph', 'ph-speaker-low');
-    else muteBtnIcon.classList.add('ph', 'ph-speaker-high');
-}
-
-let lastVolume = 1;
-muteBtn.addEventListener('click', () => {
-    if (audio.volume > 0) {
-        lastVolume = audio.volume;
-        audio.volume = 0;
-        volumeProgress.style.width = '0%';
-    } else {
-        audio.volume = lastVolume;
-        volumeProgress.style.width = `${lastVolume * 100}%`;
     }
     updateVolumeIcon(audio.volume);
 });
@@ -267,11 +233,10 @@ themeToggle.addEventListener('click', () => {
     }
 });
 
-// --- Navigation Tab Logic ---
+// Navigation Tab Logic
 const navHome = document.getElementById('nav-home');
 const navSearch = document.getElementById('nav-search');
 const navLibrary = document.getElementById('nav-library');
-
 const viewHome = document.getElementById('view-home');
 const viewSearch = document.getElementById('view-search');
 const viewLibrary = document.getElementById('view-library');
@@ -293,47 +258,32 @@ navHome.addEventListener('click', () => switchView(navHome, viewHome));
 navSearch.addEventListener('click', () => switchView(navSearch, viewSearch));
 navLibrary.addEventListener('click', () => switchView(navLibrary, viewLibrary));
 
-// --- NEW: Play Local Audio File Logic ---
+// Play Local Audio File Logic
 const navLocalFile = document.getElementById('nav-local-file');
 const localFileInput = document.getElementById('local-file-input');
 
-// When user clicks the sidebar item, trigger the hidden file input
-navLocalFile.addEventListener('click', () => {
-    localFileInput.click();
-});
+navLocalFile.addEventListener('click', () => localFileInput.click());
 
-// When user selects a file from their device
 localFileInput.addEventListener('change', function() {
     const file = this.files[0];
-    
     if (file) {
-        // Create a temporary URL for the local file
         const fileURL = URL.createObjectURL(file);
-        
-        // Remove .mp3 or .wav from the title so it looks clean
         const cleanTitle = file.name.replace(/\.[^/.]+$/, "");
         
-        // Create a new song object
         const customSong = {
             title: cleanTitle,
             artist: "Local File",
             src: fileURL,
-            cover: "https://picsum.photos/id/1025/300/300", // Default cover for local files
+            cover: "https://picsum.photos/id/1025/300/300",
             time: "--:--"
         };
         
-        // Add it to our playlist array
         songs.push(customSong);
-        
-        // Set index to the new song and play it
         songIndex = songs.length - 1;
         
-        // Re-render the tracklist and play
         renderTracks();
         loadSong(songs[songIndex]);
         playSong();
-        
-        // Make sure we switch back to the home view to see the new track
         switchView(navHome, viewHome);
     }
 });
