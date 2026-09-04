@@ -227,3 +227,44 @@ themeToggle.addEventListener('click', () => {
         themeIcon.classList.replace('ph-sun', 'ph-moon');
     }
 });
+// --- Navigation Tab Logic --- //
+
+// 1. Get the sidebar buttons
+const navHome = document.getElementById('nav-home');
+const navSearch = document.getElementById('nav-search');
+const navLibrary = document.getElementById('nav-library');
+
+// 2. Get the screen sections
+const viewHome = document.getElementById('view-home');
+const viewSearch = document.getElementById('view-search');
+const viewLibrary = document.getElementById('view-library');
+
+// Function to hide everything and show only the selected page
+function switchView(selectedNav, selectedView) {
+    // Remove "active" class from all sidebar links
+    navHome.classList.remove('active');
+    navSearch.classList.remove('active');
+    navLibrary.classList.remove('active');
+    
+    // Hide all sections
+    viewHome.style.display = 'none';
+    viewSearch.style.display = 'none';
+    viewLibrary.style.display = 'none';
+    
+    // Highlight the clicked link and show the correct section
+    selectedNav.classList.add('active');
+    selectedView.style.display = 'block';
+}
+
+// 3. Add Event Listeners for clicks
+navHome.addEventListener('click', () => {
+    switchView(navHome, viewHome);
+});
+
+navSearch.addEventListener('click', () => {
+    switchView(navSearch, viewSearch);
+});
+
+navLibrary.addEventListener('click', () => {
+    switchView(navLibrary, viewLibrary);
+});
